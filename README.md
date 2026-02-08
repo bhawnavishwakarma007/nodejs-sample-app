@@ -82,7 +82,9 @@ The application:
 
 ## Docker Configuration
 
-### Dockerfile
+### Approach 1: Official Node Runtime Image (Recommended)
+
+#### Dockerfile
 
     FROM node:18
     
@@ -96,6 +98,45 @@ The application:
     EXPOSE 81
     
     CMD ["node", "index.js"]
+
+#### Build Image
+
+    docker build -t devops-node-app .
+
+#### Run Container
+
+    docker run -d -p 81:81 --name nodeapp devops-node-app
+
+---
+
+### Approach 2: Ubuntu Base Image with Manual Node Installation
+
+#### Dockerfile
+
+    FROM ubuntu
+    
+    COPY . /home/app
+    WORKDIR /home/app
+    
+    RUN apt-get update && apt-get install -y nodejs npm
+    
+    RUN npm install
+    
+    CMD ["npm","start"]
+
+#### Build Image
+
+    docker build -t nodeapp .
+
+#### Run Container
+
+Interactive mode:
+
+    docker run -it nodeapp
+
+Detached mode:
+
+    docker run -d -p 81:81 nodeapp
 
 ---
 
@@ -112,18 +153,6 @@ Start server:
 Open:
 
     http://localhost:81
-
----
-
-## Run Using Docker
-
-Build image:
-
-    docker build -t devops-node-app .
-
-Run container:
-
-    docker run -d -p 81:81 --name nodeapp devops-node-app
 
 ---
 
