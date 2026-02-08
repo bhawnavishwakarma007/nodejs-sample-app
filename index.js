@@ -2,7 +2,17 @@ var http = require('http');
 
 http.createServer(function (req, res) {
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    // API Route
+    if (req.url === "/status") {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+            status: "Docker Container Running Successfully 🚀"
+        }));
+        return;
+    }
+
+    // UI Route
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
 
     res.write(`
     <!DOCTYPE html>
@@ -17,7 +27,6 @@ http.createServer(function (req, res) {
                 text-align: center;
                 padding-top: 100px;
             }
-
             .card {
                 background: rgba(255,255,255,0.1);
                 padding: 40px;
@@ -26,11 +35,7 @@ http.createServer(function (req, res) {
                 margin: auto;
                 box-shadow: 0 0 20px rgba(0,0,0,0.5);
             }
-
-            h1 {
-                color: #00ffd5;
-            }
-
+            h1 { color: #00ffd5; }
             button {
                 padding: 12px 25px;
                 border: none;
@@ -41,26 +46,27 @@ http.createServer(function (req, res) {
                 cursor: pointer;
                 margin-top: 20px;
             }
-
-            button:hover {
-                background: #00c2a8;
-            }
+            button:hover { background: #00c2a8; }
         </style>
     </head>
 
     <body>
         <div class="card">
             <h1>🚀 Welcome to DevOps Training</h1>
-            <p>This application is deployed using Node.js Server</p>
+            <p>Application deployed inside Docker on AWS EC2</p>
             <p>Server running on Port 81</p>
 
-            <button onclick="showMsg()">Click Me</button>
+            <button onclick="checkDocker()">Check Container</button>
             <p id="msg"></p>
         </div>
 
         <script>
-            function showMsg(){
-                document.getElementById("msg").innerHTML = "CI/CD Pipeline is Working!";
+            function checkDocker(){
+                fetch('/status')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("msg").innerHTML = data.status;
+                });
             }
         </script>
     </body>
@@ -72,4 +78,3 @@ http.createServer(function (req, res) {
 }).listen(81);
 
 console.log("Server running at http://localhost:81");
-
